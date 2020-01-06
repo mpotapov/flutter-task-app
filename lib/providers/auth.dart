@@ -35,7 +35,6 @@ class Auth with ChangeNotifier {
     } on SocketException catch (_) {
       throw 'No network connection!';
     } catch (err) {
-      print(err);
       throw err;
     }
     final prefs = await SharedPreferences.getInstance();
