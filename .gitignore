@@ -10,3 +10,6 @@ doc/api/
 *.iws         // IntelliJ
 .idea/        // IntelliJ
 .DS_Store     // Mac
+
+.flutter-plugins
+.flutter-plugins-dependencies
