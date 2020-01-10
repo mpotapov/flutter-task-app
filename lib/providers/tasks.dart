@@ -4,13 +4,14 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/task.dart';
 
 class Tasks with ChangeNotifier {
   List<Task> _items = [];
   Map<String, dynamic> _meta = {};
-  Map<String, String> _sortOptions = {};
+  Map<String, dynamic> _sortOptions = {};
   final _bearer;
   final _url = 'https://testapi.doitserver.in.ua/api';
 
@@ -22,7 +23,9 @@ class Tasks with ChangeNotifier {
       'sortBy': 'dueBy',
       'direction': 'asc',
     },
-  ]);
+  ]) {
+    _setSortOptionsFormSharedPreferences();
+  }
 
   List<Task> get items => [..._items];
 
@@ -30,7 +33,7 @@ class Tasks with ChangeNotifier {
 
   Map<String, String> get sortOptions => {..._sortOptions};
 
-  set sortOptions(Map<String, String> options) => _sortOptions = options;
+  set sortOptions(Map<String, dynamic> options) => _sortOptions = options;
 
   Future<void> fetchTasks({int page, String sort, bool refresh = true}) async {
     try {
@@ -149,5 +152,15 @@ class Tasks with ChangeNotifier {
 
   Task getTaskById(int taskId) {
     return _items.firstWhere((task) => task.id == taskId);
+  }
+
+  Future<void> _setSortOptionsFormSharedPreferences() async {
+    var prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('sortOptions')) {
+      prefs.setString('sortOptions', json.encode(_sortOptions));
+      return;
+    }
+    final optionsString = prefs.getString('sortOptions');
+    _sortOptions = json.decode(optionsString) as Map<String, dynamic>;
   }
 }

@@ -138,7 +138,7 @@ class _AuthState extends State<AuthForm> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        'Login / Register',
+                        'Register / Login',
                         style: TextStyle(
                           fontSize: _deviceData.size.height * 0.035,
                         ),

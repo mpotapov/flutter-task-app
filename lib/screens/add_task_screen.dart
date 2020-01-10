@@ -120,6 +120,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
     });
   }
 
+  void _setTaskPriorityState(dynamic value) {
+    setState(() {
+      _task['priority'] = value;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final _deviceData = MediaQuery.of(context);
@@ -178,6 +184,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
                         _task,
                         _saving,
                         _setTaskState,
+                        _setTaskPriorityState,
                       )
                     ]),
                   ),

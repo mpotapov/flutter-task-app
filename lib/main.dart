@@ -7,6 +7,7 @@ import './screens/task_list_screen.dart';
 import './screens/task_details_screen.dart';
 import './screens/auth_screen.dart';
 import './screens/loading_screen.dart';
+import './screens/settings_screen.dart';
 
 import './providers/tasks.dart';
 import './providers/auth.dart';
@@ -39,6 +40,10 @@ class TaskApp extends StatelessWidget {
                 theme: ThemeData(
                   primaryColor: const Color(0xFFD9D9D9),
                   accentColor: const Color(0xFF828282),
+                  textTheme: TextTheme(
+                      title: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  )),
                 ),
                 home: auth.isAuthenticate
                     ? TaskListScreen()
@@ -54,6 +59,7 @@ class TaskApp extends StatelessWidget {
                   TaskListScreen.routeName: (_) => TaskListScreen(),
                   AddTaskScreen.routeName: (_) => AddTaskScreen(),
                   TaskDetailsScreen.routeName: (_) => TaskDetailsScreen(),
+                  SettingsScreen.routeName: (_) => SettingsScreen(),
                 },
               )),
     );

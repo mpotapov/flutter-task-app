@@ -8,7 +8,7 @@ import '../screens/add_task_screen.dart';
 import '../providers/tasks.dart';
 
 import '../widgets/task_list.dart';
-import '../widgets/logout_button.dart';
+import '../widgets/app_drawer.dart';
 
 class TaskListScreen extends StatelessWidget with ErrorHandler {
   static const routeName = '/tesk-list';
@@ -30,7 +30,6 @@ class TaskListScreen extends StatelessWidget with ErrorHandler {
       appBar: AppBar(
         title: const Text('My tasks'),
         centerTitle: true,
-        leading: LogoutButton(),
         actions: <Widget>[
           PopupMenuButton(
             icon: const Icon(Icons.sort),
@@ -59,8 +58,8 @@ class TaskListScreen extends StatelessWidget with ErrorHandler {
           ),
           IconButton(
             icon: Icon(_sortOptions['direction'] == 'asc'
-                ? Icons.arrow_downward
-                : Icons.arrow_upward),
+                ? Icons.arrow_upward
+                : Icons.arrow_downward),
             onPressed: () {
               Provider.of<Tasks>(context, listen: false).sortOptions = {
                 'sortBy': _sortOptions['sortBy'],
@@ -76,6 +75,7 @@ class TaskListScreen extends StatelessWidget with ErrorHandler {
           ),
         ],
       ),
+      drawer: AppDrawer(),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () => Provider.of<Tasks>(context, listen: false)

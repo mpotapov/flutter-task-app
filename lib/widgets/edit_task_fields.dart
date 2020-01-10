@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import './priority_button.dart';
+import './choose_button.dart';
 
 class EditTaskFields extends StatelessWidget {
   final _task;
   final _saving;
   final Function _setTaskStateHandler;
+  final Function _setTaskPriorityHandler;
 
-  EditTaskFields(this._task, this._saving, this._setTaskStateHandler);
+  EditTaskFields(
+    this._task,
+    this._saving,
+    this._setTaskStateHandler,
+    this._setTaskPriorityHandler,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -59,10 +65,24 @@ class EditTaskFields extends StatelessWidget {
             builder: (_) => Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                PriorityButton('High', _setTaskStateHandler, _task['priority']),
-                PriorityButton(
-                    'Normal', _setTaskStateHandler, _task['priority']),
-                PriorityButton('Low', _setTaskStateHandler, _task['priority']),
+                ChooseButton(
+                  'High',
+                  'High',
+                  _setTaskPriorityHandler,
+                  _task['priority'],
+                ),
+                ChooseButton(
+                  'Normal',
+                  'Normal',
+                  _setTaskPriorityHandler,
+                  _task['priority'],
+                ),
+                ChooseButton(
+                  'Low',
+                  'Low',
+                  _setTaskPriorityHandler,
+                  _task['priority'],
+                ),
               ],
             ),
           ),
