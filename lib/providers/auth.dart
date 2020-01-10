@@ -24,8 +24,8 @@ class Auth with ChangeNotifier {
   Future<void> _authenticate(String email, String password, String url) async {
     try {
       var response = await http.post(_url + '/$url', body: {
-        'email': email,
-        'password': password,
+        'email': email.trim(),
+        'password': password.trim(),
       });
       final responseData = json.decode(response.body) as Map<String, dynamic>;
       _checkForError(response.statusCode, responseData);

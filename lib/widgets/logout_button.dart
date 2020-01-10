@@ -6,9 +6,10 @@ import '../providers/auth.dart';
 class LogoutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(Icons.exit_to_app),
-      onPressed: () {
+    return ListTile(
+      leading: Icon(Icons.exit_to_app),
+      title: Text('Logout'),
+      onTap: () {
         showDialog(
           context: context,
           child: AlertDialog(
@@ -18,6 +19,7 @@ class LogoutButton extends StatelessWidget {
               FlatButton(
                   child: const Text('OK'),
                   onPressed: () {
+                    Navigator.of(context).pop();
                     Navigator.of(context).pop();
                     Provider.of<Auth>(context, listen: false).logout();
                   }),

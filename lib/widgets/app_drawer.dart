@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../screens/task_list_screen.dart';
 import '../screens/settings_screen.dart';
 
+import './logout_button.dart';
+
 class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -36,11 +38,7 @@ class AppDrawer extends StatelessWidget {
                   SettingsScreen.routeName, (Route<dynamic> route) => false);
             },
           ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text('Logout'),
-            onTap: () {},
-          ),
+          LogoutButton(),
         ],
       ),
     );
