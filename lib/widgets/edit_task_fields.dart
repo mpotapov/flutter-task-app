@@ -2,23 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import './choose_button.dart';
+import './add_notification.dart';
 
 class EditTaskFields extends StatelessWidget {
   final _task;
   final _saving;
   final Function _setTaskStateHandler;
   final Function _setTaskPriorityHandler;
+  final Function _setNotificationDateTimeHandler;
 
   EditTaskFields(
     this._task,
     this._saving,
     this._setTaskStateHandler,
     this._setTaskPriorityHandler,
+    this._setNotificationDateTimeHandler,
   );
 
   @override
   Widget build(BuildContext context) {
     final _deviceData = MediaQuery.of(context);
+    final _padding = _deviceData.size.width * 0.025;
 
     void _datePicker() {
       showDatePicker(
@@ -50,7 +54,7 @@ class EditTaskFields extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.all(_deviceData.size.width * 0.025),
+          padding: EdgeInsets.all(_padding),
           child: Text(
             'Priority',
             style: TextStyle(
@@ -60,7 +64,7 @@ class EditTaskFields extends StatelessWidget {
           ),
         ),
         Container(
-          padding: EdgeInsets.only(bottom: _deviceData.size.width * 0.025),
+          padding: EdgeInsets.only(bottom: _padding),
           child: FormField(
             builder: (_) => Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -87,11 +91,9 @@ class EditTaskFields extends StatelessWidget {
             ),
           ),
         ),
-        Divider(
-          color: Theme.of(context).accentColor,
-        ),
+        Divider(color: Theme.of(context).accentColor),
         Padding(
-          padding: EdgeInsets.all(_deviceData.size.width * 0.025),
+          padding: EdgeInsets.all(_padding),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -114,11 +116,9 @@ class EditTaskFields extends StatelessWidget {
             ],
           ),
         ),
-        Divider(
-          color: Theme.of(context).accentColor,
-        ),
+        Divider(color: Theme.of(context).accentColor),
         Padding(
-          padding: EdgeInsets.all(_deviceData.size.width * 0.025),
+          padding: EdgeInsets.all(_padding),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -141,9 +141,19 @@ class EditTaskFields extends StatelessWidget {
             ],
           ),
         ),
-        Divider(
-          color: Theme.of(context).accentColor,
-        ),
+        Divider(color: Theme.of(context).accentColor),
+        _task['time'] == null || _task['date'] == null
+            ? Container()
+            : Column(
+                children: <Widget>[
+                  AddNotification(
+                    _task['date'],
+                    _task['time'],
+                    _setNotificationDateTimeHandler,
+                  ),
+                  Divider(color: Theme.of(context).accentColor),
+                ],
+              )
       ],
     );
   }

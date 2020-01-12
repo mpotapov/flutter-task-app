@@ -75,7 +75,7 @@ class Tasks with ChangeNotifier {
     }
   }
 
-  Future<void> addTask(Task task) async {
+  Future<int> addTask(Task task) async {
     try {
       final response = await http.post(
         _url + '/tasks',
@@ -91,6 +91,7 @@ class Tasks with ChangeNotifier {
         // Return new sorted tasks from server instead of add new unsorted
         await fetchTasks();
         notifyListeners();
+        return json.decode(response.body)['task']['id'];
       } else {
         throw response.body;
       }

@@ -11,7 +11,7 @@ import '../widgets/task_list.dart';
 import '../widgets/app_drawer.dart';
 
 class TaskListScreen extends StatelessWidget with ErrorHandler {
-  static const routeName = '/tesk-list';
+  static const routeName = '/task-list';
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,6 @@ class TaskListScreen extends StatelessWidget with ErrorHandler {
                   .catchError(
                     (err) => showError(context, err),
                   );
-              ;
             },
           ),
         ],

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import '../screens/task_details_screen.dart';
 
 import '../mixins/error_handler.dart';
 
@@ -12,8 +15,9 @@ import '../widgets/edit_task_fields.dart';
 class AddTaskScreen extends StatefulWidget {
   static const routeName = '/add-task';
   final _taskId;
+  final _navigatorKey;
 
-  AddTaskScreen([this._taskId]);
+  AddTaskScreen(this._navigatorKey, [this._taskId]);
 
   @override
   _AddTaskScreenState createState() => _AddTaskScreenState();
@@ -26,9 +30,35 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
     'priority': null,
     'date': null,
     'time': null,
+    'notificationDateTime': null,
   };
   bool _saving = false;
   bool _loadingDataToApi = false;
+  DateTime _notificationDateTime;
+  FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
+
+  @override
+  void initState() {
+    if (widget._taskId != null) {
+      final taskFromDb = Provider.of<Tasks>(context, listen: false)
+          .getTaskById(widget._taskId);
+      _task['title'] = taskFromDb.title;
+      _task['priority'] = taskFromDb.priority;
+      _task['date'] = taskFromDb.dueBy;
+      _task['time'] = TimeOfDay(
+        hour: taskFromDb.dueBy.hour,
+        minute: taskFromDb.dueBy.minute,
+      );
+    }
+    initializeNotifications();
+    super.initState();
+  }
+
+  void _setNotificationDateTime(DateTime dateTime) {
+    setState(() {
+      _notificationDateTime = dateTime;
+    });
+  }
 
   Task _createTaskInstanceFromMap(int taskId) {
     return Task(
@@ -77,20 +107,24 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
       if (widget._taskId != null) {
         await Provider.of<Tasks>(context, listen: false)
             .updateTask(
-              widget._taskId,
-              _createTaskInstanceFromMap(widget._taskId),
-            )
-            .then(Navigator.of(context).pop)
-            .catchError(
-              (err) => showError(context, err),
-            );
+          widget._taskId,
+          _createTaskInstanceFromMap(widget._taskId),
+        )
+            .then((_) {
+          setNotification(widget._taskId);
+          Navigator.of(context).pop();
+        }).catchError(
+          (err) => showError(context, err),
+        );
       } else {
         await Provider.of<Tasks>(context, listen: false)
             .addTask(_createTaskInstanceFromMap(null))
-            .then(Navigator.of(context).pop)
-            .catchError(
-              (err) => showError(context, err),
-            );
+            .then((taskId) {
+          setNotification(taskId);
+          Navigator.of(context).pop();
+        }).catchError(
+          (err) => showError(context, err),
+        );
       }
       setState(() {
         _loadingDataToApi = false;
@@ -98,20 +132,43 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
     }
   }
 
-  @override
-  void initState() {
-    if (widget._taskId != null) {
-      final taskFromDb = Provider.of<Tasks>(context, listen: false)
-          .getTaskById(widget._taskId);
-      _task['title'] = taskFromDb.title;
-      _task['priority'] = taskFromDb.priority;
-      _task['date'] = taskFromDb.dueBy;
-      _task['time'] = TimeOfDay(
-        hour: taskFromDb.dueBy.hour,
-        minute: taskFromDb.dueBy.minute,
-      );
+  void initializeNotifications() {
+    print('gaga');
+    _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    var initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettingsIOS = IOSInitializationSettings();
+    var initializationSettings = InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    _flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: _onSelectNotification);
+  }
+
+  Future<void> setNotification(int taskId) async {
+    if (_notificationDateTime == null) {
+      return;
     }
-    super.initState();
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your other channel id',
+        'your other channel name',
+        'your other channel description');
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    NotificationDetails platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await _flutterLocalNotificationsPlugin.schedule(
+      taskId,
+      'Notification about task',
+      _task['title'],
+      _notificationDateTime,
+      platformChannelSpecifics,
+      payload: taskId.toString(),
+    );
+  }
+
+  Future<void> _onSelectNotification(String payload) async {
+    await widget._navigatorKey.currentState.pushNamed(
+        TaskDetailsScreen.routeName,
+        arguments: int.parse(payload));
   }
 
   void _setTaskState(String key, dynamic value) {
@@ -185,6 +242,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
                         _saving,
                         _setTaskState,
                         _setTaskPriorityState,
+                        _setNotificationDateTime,
                       )
                     ]),
                   ),

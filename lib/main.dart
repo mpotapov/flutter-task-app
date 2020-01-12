@@ -20,6 +20,8 @@ class TaskApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
+    var _navigatorKey = GlobalKey<NavigatorState>();
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => Auth()),
@@ -45,6 +47,7 @@ class TaskApp extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   )),
                 ),
+                navigatorKey: _navigatorKey,
                 home: auth.isAuthenticate
                     ? TaskListScreen()
                     : FutureBuilder(
@@ -57,8 +60,8 @@ class TaskApp extends StatelessWidget {
                       ),
                 routes: {
                   TaskListScreen.routeName: (_) => TaskListScreen(),
-                  AddTaskScreen.routeName: (_) => AddTaskScreen(),
-                  TaskDetailsScreen.routeName: (_) => TaskDetailsScreen(),
+                  AddTaskScreen.routeName: (_) => AddTaskScreen(_navigatorKey),
+                  TaskDetailsScreen.routeName: (_) => TaskDetailsScreen(_navigatorKey),
                   SettingsScreen.routeName: (_) => SettingsScreen(),
                 },
               )),
