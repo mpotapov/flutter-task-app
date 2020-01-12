@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 class AddNotification extends StatefulWidget {
   DateTime _taskDateTime;
   final Function _notificationTimeHandler;
+  final _notificationDateTime;
 
-  AddNotification(taskDate, taskTime, this._notificationTimeHandler) {
+  AddNotification(
+    taskDate,
+    taskTime,
+    this._notificationTimeHandler,
+    this._notificationDateTime,
+  ) {
     _taskDateTime = DateTime(
       taskDate.year,
       taskDate.month,
@@ -116,7 +122,12 @@ class _AddNotificationState extends State<AddNotification> {
             Container(
               child: Row(
                 children: <Widget>[
-                  Text(_notificationTime),
+                  Text(
+                    widget._notificationDateTime == null
+                        ? _notificationTime
+                        : TimeOfDay.fromDateTime(widget._notificationDateTime)
+                            .format(context),
+                  ),
                   const Icon(
                     Icons.arrow_forward_ios,
                     color: Colors.grey,

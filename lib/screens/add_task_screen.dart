@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -35,6 +37,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
   bool _saving = false;
   bool _loadingDataToApi = false;
   DateTime _notificationDateTime;
+  DateTime _previousNotificationDateTime;
   FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
 
   @override
@@ -132,16 +135,35 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
     }
   }
 
-  void initializeNotifications() {
-    print('gaga');
+  Future<void> initializeNotifications() async {
     _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
     var initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettingsIOS = IOSInitializationSettings();
     var initializationSettings = InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
-    _flutterLocalNotificationsPlugin.initialize(initializationSettings,
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: _onSelectNotification);
+
+    if (widget._taskId != null) {
+      var notifications =
+          await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
+      var notification = notifications.firstWhere((val) {
+        return json.decode(val.payload)['id'] == widget._taskId;
+      }, orElse: () => null);
+      if (notification != null) {
+        var notifData = json.decode(notification.payload);
+        setState(() {
+          _previousNotificationDateTime = DateTime(
+            notifData['year'],
+            notifData['month'],
+            notifData['day'],
+            notifData['hour'],
+            notifData['minute'],
+          );
+        });
+      }
+    }
   }
 
   Future<void> setNotification(int taskId) async {
@@ -149,9 +171,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
       return;
     }
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        'your other channel id',
-        'your other channel name',
-        'your other channel description');
+        'task channel id', 'task channel name', 'channel description');
     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
     NotificationDetails platformChannelSpecifics = new NotificationDetails(
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
@@ -161,14 +181,21 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
       _task['title'],
       _notificationDateTime,
       platformChannelSpecifics,
-      payload: taskId.toString(),
+      payload: json.encode({
+        'id': taskId,
+        'day': _notificationDateTime.day,
+        'month': _notificationDateTime.month,
+        'year': _notificationDateTime.year,
+        'hour': _notificationDateTime.hour,
+        'minute': _notificationDateTime.minute,
+      }),
     );
   }
 
   Future<void> _onSelectNotification(String payload) async {
     await widget._navigatorKey.currentState.pushNamed(
         TaskDetailsScreen.routeName,
-        arguments: int.parse(payload));
+        arguments: json.decode(payload)['id']);
   }
 
   void _setTaskState(String key, dynamic value) {
@@ -243,6 +270,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> with ErrorHandler {
                         _setTaskState,
                         _setTaskPriorityState,
                         _setNotificationDateTime,
+                        _previousNotificationDateTime,
                       )
                     ]),
                   ),

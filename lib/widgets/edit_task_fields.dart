@@ -10,6 +10,7 @@ class EditTaskFields extends StatelessWidget {
   final Function _setTaskStateHandler;
   final Function _setTaskPriorityHandler;
   final Function _setNotificationDateTimeHandler;
+  final _notificationDateTime;
 
   EditTaskFields(
     this._task,
@@ -17,6 +18,7 @@ class EditTaskFields extends StatelessWidget {
     this._setTaskStateHandler,
     this._setTaskPriorityHandler,
     this._setNotificationDateTimeHandler,
+    this._notificationDateTime,
   );
 
   @override
@@ -150,6 +152,7 @@ class EditTaskFields extends StatelessWidget {
                     _task['date'],
                     _task['time'],
                     _setNotificationDateTimeHandler,
+                    _notificationDateTime,
                   ),
                   Divider(color: Theme.of(context).accentColor),
                 ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
+import './screens/reminders_screen.dart';
 import './screens/add_task_screen.dart';
 import './screens/task_list_screen.dart';
 import './screens/task_details_screen.dart';
@@ -63,6 +64,7 @@ class TaskApp extends StatelessWidget {
                   AddTaskScreen.routeName: (_) => AddTaskScreen(_navigatorKey),
                   TaskDetailsScreen.routeName: (_) => TaskDetailsScreen(_navigatorKey),
                   SettingsScreen.routeName: (_) => SettingsScreen(),
+                  RemindersScreen.routeName: (_) => RemindersScreen(),
                 },
               )),
     );

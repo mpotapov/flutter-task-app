@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../screens/reminders_screen.dart';
 import '../screens/task_list_screen.dart';
 import '../screens/settings_screen.dart';
 
@@ -28,7 +29,10 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.notifications),
             title: Text('Reminders'),
-            onTap: () {},
+            onTap: () {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  RemindersScreen.routeName, (Route<dynamic> route) => false);
+            },
           ),
           ListTile(
             leading: Icon(Icons.settings),
